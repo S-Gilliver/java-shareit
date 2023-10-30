@@ -60,4 +60,25 @@ public class InMemoryUserStorage implements UserStorage {
         users.remove(userId);
     }
 
+    @Override
+    public boolean existsByEmail(String email) {
+        for (User user : users.values()) {
+            if (user.getEmail().equals(email)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean existsByEmail(String email, int userId) {
+        for (User user : users.values()) {
+            if (userId != user.getId()) {
+                if (user.getEmail().equals(email)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.item.mapper.ItemMapper.toItemDtoById;
-
 @Data
 @Slf4j
 @Service
@@ -29,6 +27,8 @@ public class ItemServiceImpl implements ItemService {
     private final ItemStorage itemStorage;
 
     private final UserStorage userStorage;
+
+    private static ItemMapper itemMapper;
 
     private final ItemRequestStorage itemRequestStorage;
 
@@ -44,54 +44,11 @@ public class ItemServiceImpl implements ItemService {
                 .request(itemDto.getRequest() != null ? itemRequestStorage
                         .getItemRequest((int) itemDto.getRequest().getId()) : null)
                 .build();
-        return toItemDtoById(itemStorage.putItem(item));
+        return itemMapper.toDto(itemStorage.putItem(item));
     }
 
     @Override
     public ItemDto updateItem(ItemDto itemDto, int userId) {
-        Item oldItem = validateItemById(itemDto, userId);
-        return toItemDtoById(itemStorage.updateItem(oldItem));
-    }
-
-    @Override
-    public ItemDto getItemById(int itemId, int userId) {
-        userStorage.getUserById(userId);
-        return toItemDtoById(itemStorage.getItemById(itemId));
-    }
-
-
-    @Override
-    public List<ItemDto> getItemsByUserId(int userId) {
-        userStorage.getUserById(userId);
-
-        return itemStorage.getItems()
-                .stream()
-                .filter(item -> item.getOwner().getId().equals(userId))
-                .map(ItemMapper::toItemDtoById)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<ItemDto> getItemsByQuery(String query) {
-        List<ItemDto> itemsDto = new ArrayList<>();
-        List<Item> itemsList = itemStorage.getItems();
-
-        if (query.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        for (Item item : itemsList) {
-            if ((item.getName().toLowerCase().contains(query.toLowerCase()) ||
-                    item.getDescription().toLowerCase().contains(query.toLowerCase())) &&
-                    item.getAvailable()) {
-                itemsDto.add(toItemDtoById(item));
-            }
-        }
-        return itemsDto;
-    }
-
-    private Item validateItemById(ItemDto itemDto, int userId) {
-
         userStorage.getUserById(userId);
 
         Item oldItem = itemStorage.getItemById(itemDto.getId());
@@ -112,11 +69,56 @@ public class ItemServiceImpl implements ItemService {
             oldItem.setAvailable(itemDto.getAvailable());
         }
 
-        Set<ConstraintViolation<Item>> violations = Validation.buildDefaultValidatorFactory().getValidator().validate(oldItem);
+        validateItem(oldItem);
+
+        return itemMapper.toDto(itemStorage.updateItem(oldItem));
+    }
+
+    @Override
+    public ItemDto getItemById(int itemId, int userId) {
+        userStorage.getUserById(userId);
+        return itemMapper.toDto(itemStorage.getItemById(itemId));
+    }
+
+
+    @Override
+    public List<ItemDto> getItemsByUserId(int userId) {
+        userStorage.getUserById(userId);
+
+        return itemStorage.getItems()
+                .stream()
+                .filter(item -> item.getOwner().getId().equals(userId))
+                .map(ItemMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ItemDto> getItemsByQuery(String query) {
+        List<ItemDto> itemsDto = new ArrayList<>();
+        List<Item> itemsList = itemStorage.getItems();
+
+        if (query.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        for (Item item : itemsList) {
+            if ((item.getName().toLowerCase().contains(query.toLowerCase()) ||
+                    item.getDescription().toLowerCase().contains(query.toLowerCase())) &&
+                    item.getAvailable()) {
+                itemsDto.add(itemMapper.toDto(item));
+            }
+        }
+        return itemsDto;
+    }
+
+    private void validateItem(Item oldItem) {
+        Set<ConstraintViolation<Item>> violations = Validation
+                .buildDefaultValidatorFactory()
+                .getValidator()
+                .validate(oldItem);
+
         if (!violations.isEmpty()) {
             throw new ValidationException("Item has not been validated");
         }
-
-        return oldItem;
     }
 }

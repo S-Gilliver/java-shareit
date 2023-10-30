@@ -15,4 +15,8 @@ public interface UserStorage {
     List<User> getUsers();
 
     void removeUser(int userId);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByEmail(String email, int userId);
 }

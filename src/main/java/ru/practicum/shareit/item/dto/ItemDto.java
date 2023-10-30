@@ -8,12 +8,6 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-/**
- * TODO Sprint add-controllers.
- */
-
-
-//измена
 @Getter
 @Setter
 @Builder
