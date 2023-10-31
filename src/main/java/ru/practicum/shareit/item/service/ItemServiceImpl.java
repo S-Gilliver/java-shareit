@@ -9,6 +9,7 @@ import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.request.storage.ItemRequestStorage;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import javax.validation.ConstraintViolation;
@@ -36,7 +37,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto createItem(ItemDto itemDto, int userId) {
         userStorage.getUserById(userId);
 
-        Item item = Item.builder()
+        final Item build = Item.builder()
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
@@ -44,6 +45,8 @@ public class ItemServiceImpl implements ItemService {
                 .request(itemDto.getRequest() != null ? itemRequestStorage
                         .getItemRequest((int) itemDto.getRequest().getId()) : null)
                 .build();
+
+        Item item = build;
         return itemMapper.toDto(itemStorage.putItem(item));
     }
 
@@ -69,7 +72,7 @@ public class ItemServiceImpl implements ItemService {
             oldItem.setAvailable(itemDto.getAvailable());
         }
 
-        validateItem(oldItem);
+        validateItemData(oldItem);
 
         return itemMapper.toDto(itemStorage.updateItem(oldItem));
     }
@@ -84,24 +87,19 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> getItemsByUserId(int userId) {
         userStorage.getUserById(userId);
-
-        return itemStorage.getItems()
-                .stream()
-                .filter(item -> item.getOwner().getId().equals(userId))
-                .map(ItemMapper::toDto)
-                .collect(Collectors.toList());
+        return itemStorage.findItemsByUserId(userId);
     }
 
     @Override
     public List<ItemDto> getItemsByQuery(String query) {
         List<ItemDto> itemsDto = new ArrayList<>();
-        List<Item> itemsList = itemStorage.getItems();
+        List<Item> items = itemStorage.getItems();
 
         if (query.isEmpty()) {
             return new ArrayList<>();
         }
 
-        for (Item item : itemsList) {
+        for (Item item : items) {
             if ((item.getName().toLowerCase().contains(query.toLowerCase()) ||
                     item.getDescription().toLowerCase().contains(query.toLowerCase())) &&
                     item.getAvailable()) {
@@ -111,14 +109,14 @@ public class ItemServiceImpl implements ItemService {
         return itemsDto;
     }
 
-    private void validateItem(Item oldItem) {
+    private void validateItemData(Item oldItem) {
         Set<ConstraintViolation<Item>> violations = Validation
                 .buildDefaultValidatorFactory()
                 .getValidator()
                 .validate(oldItem);
 
         if (!violations.isEmpty()) {
-            throw new ValidationException("Item has not been validated");
+            throw new ValidationException("Item data not validated");
         }
     }
 }

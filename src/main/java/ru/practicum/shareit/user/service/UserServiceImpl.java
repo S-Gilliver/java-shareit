@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public User updateUser(UserDto userDto, int userId) {
-        validateUser(userDto, userId);
+        validateUserById(userDto, userId);
         User oldUser = userStorage.getUserById(userId);
 
         if (userDto.getEmail() != null) {
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
         if (userDto.getName() != null) {
             oldUser.setName(userDto.getName());
         }
-        validateUser(oldUser);
+        validateUserData(oldUser);
         return userStorage.updateUser(oldUser);
     }
 
@@ -60,14 +60,18 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void validateUser(UserDto userDto, int userId) {
-        if (userStorage.existsByEmail(userDto.getEmail(), userId)) {
+    private void validateUserById(UserDto userDto, int userId) {
+        if (userStorage.existsByEmailAndId(userDto.getEmail(), userId)) {
             throw new ValidationException("User with email = " + userDto.getEmail() + " already exists");
         }
     }
 
-    private void validateUser(User oldUser) {
-        Set<ConstraintViolation<User>> violations = Validation.buildDefaultValidatorFactory().getValidator().validate(oldUser);
+    private void validateUserData(User oldUser) {
+        Set<ConstraintViolation<User>> violations = Validation
+                .buildDefaultValidatorFactory()
+                .getValidator()
+                .validate(oldUser);
+
         if (!violations.isEmpty()) {
             throw new ValidationException("User data not validated");
         }

@@ -18,5 +18,5 @@ public interface UserStorage {
 
     boolean existsByEmail(String email);
 
-    boolean existsByEmail(String email, int userId);
+    boolean existsByEmailAndId(String email, int userId);
 }
