@@ -9,7 +9,6 @@ import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.request.storage.ItemRequestStorage;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import javax.validation.ConstraintViolation;
@@ -18,7 +17,6 @@ import javax.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Data
 @Slf4j
@@ -73,7 +71,6 @@ public class ItemServiceImpl implements ItemService {
         }
 
         validateItemData(oldItem);
-
         return itemMapper.toDto(itemStorage.updateItem(oldItem));
     }
 
