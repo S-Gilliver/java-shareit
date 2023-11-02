@@ -3,6 +3,7 @@ package ru.practicum.shareit.user.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
@@ -20,6 +21,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "users")
 public class User {
     @Id
@@ -34,7 +36,4 @@ public class User {
     @NotNull
     @Column(name = "email", unique = true)
     private String email;
-
-    public User() {
-    }
 }

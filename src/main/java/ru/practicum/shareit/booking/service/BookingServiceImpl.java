@@ -39,18 +39,7 @@ public class BookingServiceImpl implements BookingService {
         User user = userService.getUserById(userId);
         Item item = itemService.getItemById(bookingDtoIn.getItemId());
 
-        if (item.getOwner().getId().equals(userId)) {
-            throw new NotFoundException("Item is booked by the owner");
-        }
-        if (!item.getAvailable()) {
-            throw new BadRequestException("Booking not available");
-        }
-        if (bookingDtoIn.getStart().isAfter(bookingDtoIn.getEnd())) {
-            throw new BadRequestException("Booking start is after end");
-        }
-        if (bookingDtoIn.getStart().equals(bookingDtoIn.getEnd())) {
-            throw new BadRequestException("Booking start is equal end");
-        }
+        validateBooking(item, userId, bookingDtoIn);
 
         Booking booking = Booking.builder()
                 .start(bookingDtoIn.getStart())
@@ -60,10 +49,7 @@ public class BookingServiceImpl implements BookingService {
                 .status(BookingStatus.WAITING)
                 .build();
 
-        Set<ConstraintViolation<Booking>> violations = Validation.buildDefaultValidatorFactory().getValidator().validate(booking);
-        if (!violations.isEmpty()) {
-            throw new BadRequestException("Booking has not been validated");
-        }
+        validateBookingData(booking);
         return BookingMapper.mapToBookingDtoOut(bookingRepository.save(booking));
     }
 
@@ -115,8 +101,10 @@ public class BookingServiceImpl implements BookingService {
                     .findByBookerIdAndEndBeforeOrderByStartDesc(bookerId, LocalDateTime.now()));
         } else if (state.equals(String.valueOf(BookingState.CURRENT))) {
             return BookingMapper.mapToBookingsDtoOut(bookingRepository
-                    .findByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(bookerId, LocalDateTime.now(), LocalDateTime.now()));
-        } else if (state.equals(String.valueOf(BookingState.WAITING)) || state.equals(String.valueOf(BookingState.REJECTED))) {
+                    .findByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(bookerId,
+                            LocalDateTime.now(), LocalDateTime.now()));
+        } else if (state.equals(String.valueOf(BookingState.WAITING)) || state
+                .equals(String.valueOf(BookingState.REJECTED))) {
             return BookingMapper.mapToBookingsDtoOut(bookingRepository
                     .findByBookerIdAndStatus(bookerId, state));
         } else {
@@ -135,7 +123,8 @@ public class BookingServiceImpl implements BookingService {
             return BookingMapper.mapToBookingsDtoOut(bookingRepository.findByOwnerIdPast(ownerId));
         } else if (state.equals(String.valueOf(BookingState.CURRENT))) {
             return BookingMapper.mapToBookingsDtoOut(bookingRepository.findByOwnerIdCurrent(ownerId));
-        } else if (state.equals(String.valueOf(BookingState.WAITING)) || state.equals(String.valueOf(BookingState.REJECTED))) {
+        } else if (state.equals(String.valueOf(BookingState.WAITING)) || state
+                .equals(String.valueOf(BookingState.REJECTED))) {
             return BookingMapper.mapToBookingsDtoOut(bookingRepository.findByOwnerIdState(ownerId, state));
         } else {
             throw new BadRequestException("Unknown state: " + state);
@@ -144,8 +133,33 @@ public class BookingServiceImpl implements BookingService {
 
     private Booking getBookingById(Long bookingId) {
         if (!bookingRepository.existsById(bookingId)) {
-            throw new NotFoundException("Booking with Id = " + bookingId + " does not exist");
+            throw new NotFoundException("Booking with Id = " + bookingId + " doesn't exist");
         }
         return bookingRepository.findById(bookingId).get();
+    }
+
+    private void validateBooking(Item item, Long userId, BookingDtoIn bookingDtoIn) {
+        if (item.getOwner().getId().equals(userId)) {
+            throw new NotFoundException("Item is booked by the owner");
+        }
+        if (!item.getAvailable()) {
+            throw new BadRequestException("Booking not available");
+        }
+        if (bookingDtoIn.getStart().isAfter(bookingDtoIn.getEnd())) {
+            throw new BadRequestException("Booking start is after end");
+        }
+        if (bookingDtoIn.getStart().equals(bookingDtoIn.getEnd())) {
+            throw new BadRequestException("Booking start is equal end");
+        }
+    }
+
+    private void validateBookingData(Booking booking) {
+        Set<ConstraintViolation<Booking>> violations = Validation
+                .buildDefaultValidatorFactory()
+                .getValidator()
+                .validate(booking);
+        if (!violations.isEmpty()) {
+            throw new BadRequestException("Booking has not been validated");
+        }
     }
 }

@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.practicum.shareit.user.model.User;
 
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 @Entity
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "comments")
 public class Comment {
 
@@ -45,7 +47,4 @@ public class Comment {
 
     @Column(name = "created")
     private LocalDateTime created = LocalDateTime.now();
-
-    public Comment() {
-    }
 }

@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.model;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.AllArgsConstructor;
 import ru.practicum.shareit.booking.enums.BookingStatus;
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 @Entity
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "bookings")
 public class Booking {
 
@@ -56,7 +58,4 @@ public class Booking {
 
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
-
-    public Booking() {
-    }
 }

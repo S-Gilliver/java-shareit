@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.request.model.ItemRequest;
@@ -27,6 +28,7 @@ import java.util.List;
 @Entity
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "items")
 public class Item {
 
@@ -55,7 +57,4 @@ public class Item {
 
     @Transient
     private List<CommentDto> comments;
-
-    public Item() {
-    }
 }
