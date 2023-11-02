@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoBooking;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
@@ -29,32 +32,39 @@ public class ItemController {
 
     @PostMapping
     public ItemDto createItem(@Valid @RequestBody ItemDto itemDto,
-                              @RequestHeader(USER_ID_HEADER) int userId) {
+                              @RequestHeader(USER_ID_HEADER) Long userId) {
         return itemService.createItem(itemDto, userId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@PathVariable int itemId,
-                               @RequestHeader(USER_ID_HEADER) int userId) {
+    public ItemDtoBooking getItemById(@PathVariable Long itemId,
+                                      @RequestHeader(USER_ID_HEADER) Long userId) {
         return itemService.getItemById(itemId, userId);
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@RequestBody ItemDto itemDto,
-                              @PathVariable int itemId,
-                              @RequestHeader(USER_ID_HEADER) int userId) {
+                              @PathVariable Long itemId,
+                              @RequestHeader(USER_ID_HEADER) Long userId) {
 
         itemDto.setId(itemId);
         return itemService.updateItem(itemDto, userId);
     }
 
     @GetMapping
-    public List<ItemDto> getItemsByUserId(@RequestHeader(USER_ID_HEADER) int userId) {
+    public List<ItemDtoBooking> getItemsByUserId(@RequestHeader(USER_ID_HEADER) Long userId) {
         return itemService.getItemsByUserId(userId);
     }
 
     @GetMapping("/search")
     public List<ItemDto> getItemsByQuery(@RequestParam("text") String query) {
         return itemService.getItemsByQuery(query);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto createComment(@Valid @RequestBody Comment comment,
+                                    @PathVariable("itemId") Long itemId,
+                                    @RequestHeader(USER_ID_HEADER) Long bookerId) {
+        return itemService.createComment(comment, itemId, bookerId);
     }
 }
