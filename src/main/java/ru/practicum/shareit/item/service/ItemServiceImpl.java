@@ -1,6 +1,6 @@
 package ru.practicum.shareit.item.service;
 
-import lombok.Data;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -18,9 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@Data
 @Slf4j
 @Service
+@Builder
 public class ItemServiceImpl implements ItemService {
 
     private final ItemStorage itemStorage;
@@ -70,7 +70,7 @@ public class ItemServiceImpl implements ItemService {
             oldItem.setAvailable(itemDto.getAvailable());
         }
 
-        validateItemData(oldItem);
+        validateItem(oldItem);
         return itemMapper.toDto(itemStorage.updateItem(oldItem));
     }
 
@@ -106,7 +106,7 @@ public class ItemServiceImpl implements ItemService {
         return itemsDto;
     }
 
-    private void validateItemData(Item oldItem) {
+    private void validateItem(Item oldItem) {
         Set<ConstraintViolation<Item>> violations = Validation
                 .buildDefaultValidatorFactory()
                 .getValidator()

@@ -25,31 +25,31 @@ public class ItemController {
 
     public final ItemService itemService;
 
-    private static final String USER_HEADER = "X-Sharer-User-Id";
+    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
     public ItemDto createItem(@Valid @RequestBody ItemDto itemDto,
-                              @RequestHeader(USER_HEADER) int userId) {
+                              @RequestHeader(USER_ID_HEADER) int userId) {
         return itemService.createItem(itemDto, userId);
     }
 
     @GetMapping("/{itemId}")
     public ItemDto getItemById(@PathVariable int itemId,
-                               @RequestHeader(USER_HEADER) int userId) {
+                               @RequestHeader(USER_ID_HEADER) int userId) {
         return itemService.getItemById(itemId, userId);
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@RequestBody ItemDto itemDto,
                               @PathVariable int itemId,
-                              @RequestHeader(USER_HEADER) int userId) {
+                              @RequestHeader(USER_ID_HEADER) int userId) {
 
         itemDto.setId(itemId);
         return itemService.updateItem(itemDto, userId);
     }
 
     @GetMapping
-    public List<ItemDto> getItemsByUserId(@RequestHeader(USER_HEADER) int userId) {
+    public List<ItemDto> getItemsByUserId(@RequestHeader(USER_ID_HEADER) int userId) {
         return itemService.getItemsByUserId(userId);
     }
 
