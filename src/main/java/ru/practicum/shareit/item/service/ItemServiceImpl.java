@@ -57,7 +57,7 @@ public class ItemServiceImpl implements ItemService {
 
         Item oldItem = getItemById(itemDto.getId());
 
-        if (oldItem.getOwner().getId() != userId) {
+        if (!oldItem.getOwner().getId().equals(userId)) {
             throw new NotFoundException("Invalid item owner");
         }
 
@@ -90,7 +90,7 @@ public class ItemServiceImpl implements ItemService {
         Optional<Booking> bookingLast = Optional.ofNullable(bookingRepository.findByItemIdLast(itemId));
         Optional<Booking> bookingNext = Optional.ofNullable(bookingRepository.findByItemIdNext(itemId));
 
-        if (userId == item.getOwner().getId()) {
+        if (userId.equals(item.getOwner().getId())) {
             return ItemMapper.mapToItemDtoBooking(bookingLast, bookingNext, item);
         } else {
             return ItemMapper.mapToItemDtoBooking(Optional.empty(), Optional.empty(), item);

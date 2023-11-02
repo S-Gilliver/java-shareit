@@ -59,7 +59,7 @@ public class BookingServiceImpl implements BookingService {
         Item item = booking.getItem();
         User user = item.getOwner();
 
-        if (user.getId() != userId) {
+        if (!user.getId().equals(userId)) {
             throw new NotFoundException("Invalid owner");
         }
         if (approved && booking.getStatus().equals(BookingStatus.APPROVED)) {
@@ -81,7 +81,7 @@ public class BookingServiceImpl implements BookingService {
         Item item = booking.getItem();
         User owner = item.getOwner();
 
-        if (booker.getId() != userId && owner.getId() != userId) {
+        if (!booker.getId().equals(userId) && !owner.getId().equals(userId)) {
             throw new NotFoundException("Invalid userId");
         }
         return BookingMapper.mapToBookingDtoOut(booking);
