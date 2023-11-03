@@ -1,6 +1,6 @@
 package ru.practicum.shareit.booking.service;
 
-import lombok.Data;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDtoIn;
@@ -23,9 +23,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
-@Service
 @Slf4j
-@Data
+@Builder
+@Service
 public class BookingServiceImpl implements BookingService {
 
     private final ItemService itemService;

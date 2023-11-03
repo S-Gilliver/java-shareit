@@ -27,8 +27,8 @@ import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
-@Service
 @Builder
+@Service
 public class ItemServiceImpl implements ItemService {
 
     private final UserService userService;

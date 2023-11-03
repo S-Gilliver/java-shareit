@@ -1,6 +1,6 @@
 package ru.practicum.shareit.user.service;
 
-import lombok.Data;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.BadRequestException;
@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@Data
 @Slf4j
+@Builder
 @Service
 public class UserServiceImpl implements UserService {
 
