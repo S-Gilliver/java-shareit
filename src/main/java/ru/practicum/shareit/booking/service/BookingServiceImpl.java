@@ -39,7 +39,7 @@ public class BookingServiceImpl implements BookingService {
         User user = userService.getUserById(userId);
         Item item = itemService.getItemById(bookingDtoIn.getItemId());
 
-        validateBooking(item, userId, bookingDtoIn);
+        checkItemBooking(item, userId, bookingDtoIn);
 
         Booking booking = Booking.builder()
                 .start(bookingDtoIn.getStart())
@@ -49,7 +49,7 @@ public class BookingServiceImpl implements BookingService {
                 .status(BookingStatus.WAITING)
                 .build();
 
-        validateBookingData(booking);
+        validateBookingConstraints(booking);
         return BookingMapper.mapToBookingDtoOut(bookingRepository.save(booking));
     }
 
@@ -138,7 +138,7 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.findById(bookingId).get();
     }
 
-    private void validateBooking(Item item, Long userId, BookingDtoIn bookingDtoIn) {
+    private void checkItemBooking(Item item, Long userId, BookingDtoIn bookingDtoIn) {
         if (item.getOwner().getId().equals(userId)) {
             throw new NotFoundException("Item is booked by the owner");
         }
@@ -149,17 +149,17 @@ public class BookingServiceImpl implements BookingService {
             throw new BadRequestException("Booking start is after end");
         }
         if (bookingDtoIn.getStart().equals(bookingDtoIn.getEnd())) {
-            throw new BadRequestException("Booking start is equal end");
+            throw new BadRequestException("Booking start is equal to end");
         }
     }
 
-    private void validateBookingData(Booking booking) {
+    private void validateBookingConstraints(Booking booking) {
         Set<ConstraintViolation<Booking>> violations = Validation
                 .buildDefaultValidatorFactory()
                 .getValidator()
                 .validate(booking);
         if (!violations.isEmpty()) {
-            throw new BadRequestException("Booking has not been validated");
+            throw new BadRequestException("Booking data has not been validated");
         }
     }
 }

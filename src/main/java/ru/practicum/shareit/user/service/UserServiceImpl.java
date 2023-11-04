@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(UserDto userDto) {
         User user = userMapper.mapToUser(userDto);
-        validateUserData(user);
+        validateUserConstraints(user);
         log.info("user successfully added");
         return userRepository.save(user);
     }
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private static void validateUserData(User oldUser) {
+    private static void validateUserConstraints(User oldUser) {
         Set<ConstraintViolation<User>> violations = Validation
                 .buildDefaultValidatorFactory()
                 .getValidator()

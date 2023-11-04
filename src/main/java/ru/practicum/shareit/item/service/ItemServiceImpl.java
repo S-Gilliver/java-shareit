@@ -46,7 +46,7 @@ public class ItemServiceImpl implements ItemService {
         User user = userService.getUserById(userId);
         Item item = ItemMapper.mapToItem(itemDto, user);
 
-        validateItem(item);
+        validateItemConstraints(item);
         log.info("item successfully added");
         return itemMapper.mapToItemDto(itemRepository.save(item));
     }
@@ -74,7 +74,7 @@ public class ItemServiceImpl implements ItemService {
         }
         oldItem.setOwner(user);
 
-        validateItem(oldItem);
+        validateItemConstraints(oldItem);
         log.info("item successfully updated");
         return itemMapper.mapToItemDto(itemRepository.save(oldItem));
     }
@@ -139,7 +139,7 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.findById(itemId).get();
     }
 
-    private void validateItem(Item oldItem) {
+    private void validateItemConstraints(Item oldItem) {
         Set<ConstraintViolation<Item>> violations = Validation
                 .buildDefaultValidatorFactory()
                 .getValidator()
