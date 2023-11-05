@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 public class ItemRequest {
-    private long id;
+    private Integer id;
 
     private String description;
 
