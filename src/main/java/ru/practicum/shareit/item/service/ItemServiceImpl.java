@@ -87,13 +87,13 @@ public class ItemServiceImpl implements ItemService {
         List<CommentDto> commentsDto = CommentMapper.mapToCommentsDto(comments);
         item.setComments(commentsDto);
 
-        Optional<Booking> bookingLast = Optional.ofNullable(bookingRepository.findByItemIdLast(itemId));
-        Optional<Booking> bookingNext = Optional.ofNullable(bookingRepository.findByItemIdNext(itemId));
+        Booking bookingLast = bookingRepository.findByItemIdLast(itemId);
+        Booking bookingNext = bookingRepository.findByItemIdNext(itemId);
 
         if (userId.equals(item.getOwner().getId())) {
             return ItemMapper.mapToItemDtoBooking(bookingLast, bookingNext, item);
         } else {
-            return ItemMapper.mapToItemDtoBooking(Optional.empty(), Optional.empty(), item);
+            return ItemMapper.mapToItemDtoBooking(null, null, item);
         }
     }
 
@@ -119,7 +119,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public CommentDto createComment(Comment comment, long itemId, long bookerId) {
+    public CommentDto createComment(Comment comment, Long itemId, Long bookerId) {
         Optional<Booking> booking = Optional.ofNullable(bookingRepository.findBookingForComment(itemId, bookerId));
         if (booking.isEmpty()) {
             throw new BadRequestException("The user has not used the item");
@@ -128,11 +128,11 @@ public class ItemServiceImpl implements ItemService {
         User user = userService.getUserById(bookerId);
         comment.setItem(item);
         comment.setAuthor(user);
-        return CommentMapper.mapToCommentDto(commentRepository.save(comment));
+        return CommentMapper.mapToCommentDtos(commentRepository.save(comment));
     }
 
     @Override
-    public Item getItemById(long itemId) {
+    public Item getItemById(Long itemId) {
         if (!itemRepository.existsById(itemId)) {
             throw new NotFoundException("Item with Id = " + itemId + " does not exist");
         }

@@ -12,7 +12,6 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -78,7 +77,11 @@ public class UserServiceImpl implements UserService {
                 .validate(oldUser);
 
         if (!violations.isEmpty()) {
-            throw new BadRequestException("User data not validated: " + new ArrayList<>(violations).get(0).getMessage());
+            StringBuilder message = new StringBuilder("User data not validated: ");
+            for (ConstraintViolation<?> violation : violations) {
+                message.append(violation.getMessage()).append("; ");
+            }
+            throw new BadRequestException(message.toString());
         }
     }
 }

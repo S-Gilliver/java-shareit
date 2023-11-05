@@ -10,7 +10,6 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -41,15 +40,16 @@ public class ItemMapper {
                 .collect(Collectors.toList());
     }
 
-    public static ItemDtoBooking mapToItemDtoBooking(Optional<Booking> bookingPast, Optional<Booking> bookingFuture, Item item) {
+    public static ItemDtoBooking mapToItemDtoBooking(Booking bookingPast, Booking bookingFuture, Item item) {
         return ItemDtoBooking.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
-                .lastBooking(BookingMapper.mapToBookingDtoForItem(bookingPast))
-                .nextBooking(BookingMapper.mapToBookingDtoForItem(bookingFuture))
+                .lastBooking(bookingPast != null ? BookingMapper.mapToBookingDtoForItem(bookingPast) : null)
+                .nextBooking(bookingFuture != null ? BookingMapper.mapToBookingDtoForItem(bookingFuture) : null)
                 .comments(item.getComments())
                 .build();
     }
+
 }

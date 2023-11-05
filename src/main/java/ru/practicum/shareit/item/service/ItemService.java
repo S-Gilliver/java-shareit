@@ -19,7 +19,7 @@ public interface ItemService {
 
     List<ItemDto> getItemsByQuery(String query);
 
-    CommentDto createComment(Comment comment, long itemId, long bookerId);
+    CommentDto createComment(Comment comment, Long itemId, Long bookerId);
 
-    Item getItemById(long itemId);
+    Item getItemById(Long itemId);
 }

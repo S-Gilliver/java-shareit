@@ -9,7 +9,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -27,11 +26,15 @@ public class BookingMapper {
                 .build();
     }
 
-    public static BookingDtoForItem mapToBookingDtoForItem(Optional<Booking> booking) {
-        return booking.map(value -> BookingDtoForItem.builder()
-                .id(value.getId())
-                .bookerId(value.getBooker().getId())
-                .build()).orElse(null);
+    public static BookingDtoForItem mapToBookingDtoForItem(Booking booking) {
+        if (booking != null) {
+            return BookingDtoForItem.builder()
+                    .id(booking.getId())
+                    .bookerId(booking.getBooker().getId())
+                    .build();
+        } else {
+            return null;
+        }
     }
 
     public static List<BookingDtoOut> mapToBookingsDtoOut(List<Booking> bookings) {
