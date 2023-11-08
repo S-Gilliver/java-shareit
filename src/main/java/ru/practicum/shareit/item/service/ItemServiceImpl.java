@@ -118,7 +118,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getItemsByQuery(String query, Pageable pageable) {
-        List<Item> items = itemRepository.search(query, pageable );
+        List<Item> items = itemRepository.search(query, pageable);
         if (query.isEmpty()) {
             return new ArrayList<>();
         }

@@ -113,7 +113,7 @@ class BookingControllerTest {
         when(bookingService.updateBooking(Mockito.any(), Mockito.anyLong(),
                 Mockito.anyLong())).thenReturn(bookingDtoOut);
 
-        ResultActions resultActions = performBookingPatch(bookingDtoIn, BOOKING_API +"/1?approved=true");
+        ResultActions resultActions = performBookingPatch(bookingDtoIn, BOOKING_API + "/1?approved=true");
 
        resultActions.andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id",
@@ -146,7 +146,7 @@ class BookingControllerTest {
                 Mockito.any(PageRequest.class)))
                 .thenReturn(bookings);
 
-        ResultActions resultActions = performBookingGet(BOOKING_API +"?state=ALL");
+        ResultActions resultActions = performBookingGet(BOOKING_API + "?state=ALL");
 
         resultActions.andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id",
@@ -198,7 +198,7 @@ class BookingControllerTest {
                 Mockito.any(PageRequest.class)))
                 .thenReturn(bookings);
 
-        ResultActions resultActions = performBookingGet(OWNER_BOOKING_API +"?state=ALL");
+        ResultActions resultActions = performBookingGet(OWNER_BOOKING_API + "?state=ALL");
 
         resultActions
                 .andExpect(status().isOk())
