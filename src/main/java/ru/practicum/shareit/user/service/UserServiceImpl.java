@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
         if (!violations.isEmpty()) {
             StringBuilder message = new StringBuilder("User data not validated: ");
             for (ConstraintViolation<?> violation : violations) {
-                message.append(violation.getMessage()).append("; ");
+                message.append(violation.getMessage()).append(";");
             }
             throw new BadRequestException(message.toString());
         }

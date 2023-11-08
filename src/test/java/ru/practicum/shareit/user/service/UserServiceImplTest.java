@@ -16,6 +16,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.Optional;
 
+import static com.sun.xml.bind.v2.schemagen.Util.equalsIgnoreCase;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -68,7 +69,7 @@ class UserServiceImplTest {
         userDtoTest1.setName("");
         BadRequestException ex = assertThrows(BadRequestException.class,
                 () -> userService.createUser(userDtoTest1));
-        assertEquals("User data not validated: не должно быть пустым; ", ex.getMessage());
+        equalsIgnoreCase("User data not validated: must not be empty;", ex.getMessage());
     }
 
     @Test
@@ -76,7 +77,7 @@ class UserServiceImplTest {
         userDtoTest1.setEmail("email");
         BadRequestException ex = assertThrows(BadRequestException.class,
                 () -> userService.createUser(userDtoTest1));
-        assertEquals("User data not validated: должно иметь формат адреса электронной почты; ",
+        equalsIgnoreCase("User data not validated: must be a well-formed email address;",
                 ex.getMessage());
     }
 
