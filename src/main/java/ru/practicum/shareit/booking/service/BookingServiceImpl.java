@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.service;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.dto.BookingDtoIn;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
 import ru.practicum.shareit.booking.enums.BookingState;
@@ -88,44 +89,49 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDtoOut> getAllByBooker(Long bookerId, String state) {
+    public List<BookingDtoOut> getAllByBooker(Long bookerId, String state, Pageable pageable) {
         userService.getUserById(bookerId);
         if (state.equals(String.valueOf(BookingState.ALL)) || state.isEmpty()) {
             return BookingMapper.mapToBookingsDtoOut(bookingRepository
-                    .findByBookerIdOrderByStartDesc(bookerId));
+                    .findByBookerIdOrderByStartDesc(bookerId, pageable));
         } else if (state.equals(String.valueOf(BookingState.FUTURE))) {
             return BookingMapper.mapToBookingsDtoOut(bookingRepository
-                    .findByBookerIdAndStartAfterOrderByStartDesc(bookerId, LocalDateTime.now()));
+                    .findByBookerIdAndStartAfterOrderByStartDesc(bookerId, LocalDateTime.now(), pageable));
         } else if (state.equals(String.valueOf(BookingState.PAST))) {
             return BookingMapper.mapToBookingsDtoOut(bookingRepository
-                    .findByBookerIdAndEndBeforeOrderByStartDesc(bookerId, LocalDateTime.now()));
+                    .findByBookerIdAndEndBeforeOrderByStartDesc(bookerId, LocalDateTime.now(), pageable));
         } else if (state.equals(String.valueOf(BookingState.CURRENT))) {
             return BookingMapper.mapToBookingsDtoOut(bookingRepository
                     .findByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(bookerId,
-                            LocalDateTime.now(), LocalDateTime.now()));
+                            LocalDateTime.now(), LocalDateTime.now(), pageable));
         } else if (state.equals(String.valueOf(BookingState.WAITING)) || state
                 .equals(String.valueOf(BookingState.REJECTED))) {
             return BookingMapper.mapToBookingsDtoOut(bookingRepository
-                    .findByBookerIdAndStatus(bookerId, state));
+                    .findByBookerIdAndStatus(bookerId, state, pageable));
         } else {
             throw new BadRequestException("Unknown state: " + state);
         }
     }
 
     @Override
-    public List<BookingDtoOut> getAllByOwner(Long ownerId, String state) {
+    public List<BookingDtoOut> getAllByOwner(Long ownerId, String state, Pageable pageable) {
         userService.getUserById(ownerId);
         if (state.equals(String.valueOf(BookingState.ALL)) || state.isEmpty()) {
-            return BookingMapper.mapToBookingsDtoOut(bookingRepository.findByOwnerId(ownerId));
+            return BookingMapper.mapToBookingsDtoOut(bookingRepository
+                    .findByOwnerId(ownerId, pageable));
         } else if (state.equals(String.valueOf(BookingState.FUTURE))) {
-            return BookingMapper.mapToBookingsDtoOut(bookingRepository.findByOwnerIdFuture(ownerId));
+            return BookingMapper.mapToBookingsDtoOut(bookingRepository
+                    .findByOwnerIdFuture(ownerId, pageable));
         } else if (state.equals(String.valueOf(BookingState.PAST))) {
-            return BookingMapper.mapToBookingsDtoOut(bookingRepository.findByOwnerIdPast(ownerId));
+            return BookingMapper.mapToBookingsDtoOut(bookingRepository
+                    .findByOwnerIdPast(ownerId, pageable));
         } else if (state.equals(String.valueOf(BookingState.CURRENT))) {
-            return BookingMapper.mapToBookingsDtoOut(bookingRepository.findByOwnerIdCurrent(ownerId));
+            return BookingMapper.mapToBookingsDtoOut(bookingRepository
+                    .findByOwnerIdCurrent(ownerId, pageable));
         } else if (state.equals(String.valueOf(BookingState.WAITING)) || state
                 .equals(String.valueOf(BookingState.REJECTED))) {
-            return BookingMapper.mapToBookingsDtoOut(bookingRepository.findByOwnerIdState(ownerId, state));
+            return BookingMapper.mapToBookingsDtoOut(bookingRepository
+                    .findByOwnerIdState(ownerId, state, pageable));
         } else {
             throw new BadRequestException("Unknown state: " + state);
         }

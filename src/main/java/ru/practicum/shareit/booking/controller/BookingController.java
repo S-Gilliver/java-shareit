@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,9 +17,11 @@ import ru.practicum.shareit.booking.dto.BookingDtoOut;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
+@Validated
 @RestController
 @AllArgsConstructor
 @RequestMapping(path = "/bookings")
@@ -48,13 +52,19 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDtoOut> getAllByBooker(@RequestHeader(USER_ID_HEADER) Long bookerId,
-                                              @RequestParam(required = false, defaultValue = "ALL") String state) {
-        return bookingService.getAllByBooker(bookerId, state);
+                                              @RequestParam(required = false, defaultValue = "ALL") String state,
+                                              @Min(0) @RequestParam(defaultValue = "0") int from,
+                                              @Min(0) @RequestParam(defaultValue = "10") int size)  {
+        PageRequest pageRequest = PageRequest.of(from / size, size);
+        return bookingService.getAllByBooker(bookerId, state, pageRequest);
     }
 
     @GetMapping("/owner")
     public List<BookingDtoOut> getAllByOwner(@RequestHeader(USER_ID_HEADER) Long ownerId,
-                                             @RequestParam(required = false, defaultValue = "ALL") String state) {
-        return bookingService.getAllByOwner(ownerId, state);
+                                             @RequestParam(required = false, defaultValue = "ALL") String state,
+                                             @Min(0) @RequestParam(defaultValue = "0") int from,
+                                             @Min(0) @RequestParam(defaultValue = "10") int size) {
+        PageRequest pageRequest = PageRequest.of(from / size, size);
+        return bookingService.getAllByOwner(ownerId, state, pageRequest);
     }
 }

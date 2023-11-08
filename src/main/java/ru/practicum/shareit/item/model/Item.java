@@ -48,7 +48,8 @@ public class Item {
     @Column(name = "is_available")
     private Boolean available;
 
-    @Transient
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "request_id")
     private ItemRequest request;
 
     @ManyToOne(fetch = FetchType.LAZY)

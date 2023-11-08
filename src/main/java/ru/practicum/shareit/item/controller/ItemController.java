@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @Slf4j
@@ -52,13 +54,19 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDtoBooking> getItemsByUserId(@RequestHeader(USER_ID_HEADER) Long userId) {
-        return itemService.getItemsByUserId(userId);
+    public List<ItemDtoBooking> getItemsByUserId(@RequestHeader(USER_ID_HEADER) Long userId,
+                                                 @Min(0) @RequestParam(defaultValue = "0") int from,
+                                                 @Min(0) @RequestParam(defaultValue = "10") int size) {
+        PageRequest pageRequest = PageRequest.of(from / size, size);
+        return itemService.getItemsByUserId(userId, pageRequest);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> getItemsByQuery(@RequestParam("text") String query) {
-        return itemService.getItemsByQuery(query);
+    public List<ItemDto> getItemsByQuery(@RequestParam("text") String query,
+                                         @Min(0) @RequestParam(defaultValue = "0") int from,
+                                         @Min(0) @RequestParam(defaultValue = "10") int size) {
+        PageRequest pageRequest = PageRequest.of(from / size, size);
+        return itemService.getItemsByQuery(query, pageRequest);
     }
 
     @PostMapping("/{itemId}/comment")
