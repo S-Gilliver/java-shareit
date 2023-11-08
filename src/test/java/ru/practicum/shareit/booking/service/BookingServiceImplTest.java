@@ -184,8 +184,8 @@ class BookingServiceImplTest {
                 .thenReturn(Optional.ofNullable(bookingTest));
         when(bookingRepository.save(Mockito.any(Booking.class))).thenReturn(bookingTest);
 
-        BookingDtoOut bookingDtoOutReturn = bookingService.updateBooking(true, bookingTest.getId()
-                , userOwner.getId());
+        BookingDtoOut bookingDtoOutReturn = bookingService.updateBooking(true, bookingTest.getId(),
+                userOwner.getId());
         assertEquals(bookingTest.getStart(), bookingDtoOutReturn.getStart());
         assertEquals(bookingTest.getEnd(), bookingDtoOutReturn.getEnd());
         assertEquals(BookingStatus.APPROVED, bookingDtoOutReturn.getStatus());
