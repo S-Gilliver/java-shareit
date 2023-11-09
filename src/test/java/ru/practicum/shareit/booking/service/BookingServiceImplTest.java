@@ -272,7 +272,6 @@ class BookingServiceImplTest {
     @Test
     void getAllByBookerStateIsAll() {
         List<Booking> sourceBookings = List.of(bookingTest);
-        PageRequest pageRequest = PageRequest.of(1, 1);
 
         when(userService.getUserById(Mockito.anyLong())).thenReturn(userBooker);
         when(bookingRepository.findByBookerIdOrderByStartDesc(Mockito.anyLong(),
@@ -280,7 +279,7 @@ class BookingServiceImplTest {
                 .thenReturn(sourceBookings);
 
         List<BookingDtoOut> targetBookingsDto = bookingService.getAllByBooker(userBooker.getId(),
-                "ALL", pageRequest);
+                "ALL", 1, 1);
         assertEquals(sourceBookings.size(), targetBookingsDto.size());
         for (Booking sourceBooking : sourceBookings) {
             assertThat(targetBookingsDto, hasItem(allOf(
@@ -304,7 +303,7 @@ class BookingServiceImplTest {
                 .thenReturn(sourceBookings);
 
         List<BookingDtoOut> targetBookingsDto = bookingService.getAllByBooker(userBooker.getId(),
-                "FUTURE", pageRequest);
+                "FUTURE", 1, 1);
         assertEquals(sourceBookings.size(), targetBookingsDto.size());
         for (Booking sourceBooking : sourceBookings) {
             assertThat(targetBookingsDto, hasItem(allOf(
@@ -328,7 +327,7 @@ class BookingServiceImplTest {
                 .thenReturn(sourceBookings);
 
         List<BookingDtoOut> targetBookingsDto = bookingService.getAllByBooker(userBooker.getId(),
-                "PAST", pageRequest);
+                "PAST", 1, 1);
         assertEquals(sourceBookings.size(), targetBookingsDto.size());
         for (Booking sourceBooking : sourceBookings) {
             assertThat(targetBookingsDto, hasItem(allOf(
@@ -353,7 +352,7 @@ class BookingServiceImplTest {
                 .thenReturn(sourceBookings);
 
         List<BookingDtoOut> targetBookingsDto = bookingService.getAllByBooker(userBooker.getId(),
-                "CURRENT", pageRequest);
+                "CURRENT", 1, 1);
         assertEquals(sourceBookings.size(), targetBookingsDto.size());
         for (Booking sourceBooking : sourceBookings) {
             assertThat(targetBookingsDto, hasItem(allOf(
@@ -377,7 +376,7 @@ class BookingServiceImplTest {
                 .thenReturn(sourceBookings);
 
         List<BookingDtoOut> targetBookingsDto = bookingService.getAllByBooker(userBooker.getId(),
-                "WAITING", pageRequest);
+                "WAITING", 1, 1);
         assertEquals(sourceBookings.size(), targetBookingsDto.size());
         for (Booking sourceBooking : sourceBookings) {
             assertThat(targetBookingsDto, hasItem(allOf(
@@ -401,7 +400,7 @@ class BookingServiceImplTest {
                 .thenReturn(sourceBookings);
 
         List<BookingDtoOut> targetBookingsDto = bookingService.getAllByBooker(userBooker.getId(),
-                "REJECTED", pageRequest);
+                "REJECTED", 1, 1);
         assertEquals(sourceBookings.size(), targetBookingsDto.size());
         for (Booking sourceBooking : sourceBookings) {
             assertThat(targetBookingsDto, hasItem(allOf(
@@ -421,7 +420,7 @@ class BookingServiceImplTest {
 
         BadRequestException ex = assertThrows(BadRequestException.class,
                 () -> bookingService.getAllByBooker(userBooker.getId(),
-                        "UNKNOWN", pageRequest));
+                        "UNKNOWN", 1, 1));
         assertEquals("Unknown state: UNKNOWN", ex.getMessage());
     }
 
@@ -437,7 +436,7 @@ class BookingServiceImplTest {
                 .thenReturn(sourceBookings);
 
         List<BookingDtoOut> targetBookingsDto = bookingService.getAllByOwner(userOwner.getId(),
-                "ALL", pageRequest);
+                "ALL", 1, 1);
         assertEquals(sourceBookings.size(), targetBookingsDto.size());
         for (Booking sourceBooking : sourceBookings) {
             assertThat(targetBookingsDto, hasItem(allOf(
@@ -460,7 +459,7 @@ class BookingServiceImplTest {
                 .thenReturn(sourceBookings);
 
         List<BookingDtoOut> targetBookingsDto = bookingService.getAllByOwner(userOwner.getId(),
-                "FUTURE", pageRequest);
+                "FUTURE", 1, 1);
         assertEquals(sourceBookings.size(), targetBookingsDto.size());
         for (Booking sourceBooking : sourceBookings) {
             assertThat(targetBookingsDto, hasItem(allOf(
@@ -483,7 +482,7 @@ class BookingServiceImplTest {
                 .thenReturn(sourceBookings);
 
         List<BookingDtoOut> targetBookingsDto = bookingService.getAllByOwner(userOwner.getId(),
-                "PAST", pageRequest);
+                "PAST", 1, 1);
         assertEquals(sourceBookings.size(), targetBookingsDto.size());
         for (Booking sourceBooking : sourceBookings) {
             assertThat(targetBookingsDto, hasItem(allOf(
@@ -506,7 +505,7 @@ class BookingServiceImplTest {
                 .thenReturn(sourceBookings);
 
         List<BookingDtoOut> targetBookingsDto = bookingService.getAllByOwner(userOwner.getId(),
-                "CURRENT", pageRequest);
+                "CURRENT", 1, 1);
         assertEquals(sourceBookings.size(), targetBookingsDto.size());
         for (Booking sourceBooking : sourceBookings) {
             assertThat(targetBookingsDto, hasItem(allOf(
@@ -529,7 +528,7 @@ class BookingServiceImplTest {
                 .thenReturn(sourceBookings);
 
         List<BookingDtoOut> targetBookingsDto = bookingService.getAllByOwner(userOwner.getId(),
-                "WAITING", pageRequest);
+                "WAITING", 1, 1);
         assertEquals(sourceBookings.size(), targetBookingsDto.size());
         for (Booking sourceBooking : sourceBookings) {
             assertThat(targetBookingsDto, hasItem(allOf(
@@ -552,7 +551,7 @@ class BookingServiceImplTest {
                 .thenReturn(sourceBookings);
 
         List<BookingDtoOut> targetBookingsDto = bookingService.getAllByOwner(userOwner.getId(),
-                "REJECTED", pageRequest);
+                "REJECTED", 1, 1);
         assertEquals(sourceBookings.size(), targetBookingsDto.size());
         for (Booking sourceBooking : sourceBookings) {
             assertThat(targetBookingsDto, hasItem(allOf(
@@ -571,7 +570,7 @@ class BookingServiceImplTest {
         when(userService.getUserById(Mockito.anyLong())).thenReturn(userOwner);
 
         BadRequestException ex = assertThrows(BadRequestException.class,
-                () -> bookingService.getAllByOwner(userOwner.getId(), "UNKNOWN", pageRequest));
+                () -> bookingService.getAllByOwner(userOwner.getId(), "UNKNOWN", 1, 1));
         assertEquals("Unknown state: UNKNOWN", ex.getMessage());
     }
 }

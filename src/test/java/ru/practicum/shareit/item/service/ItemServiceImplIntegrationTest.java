@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.TestPropertySource;
 import ru.practicum.shareit.booking.dto.BookingDtoIn;
 import ru.practicum.shareit.booking.model.Booking;
@@ -169,9 +168,8 @@ class ItemServiceImplIntegrationTest {
         User user = userService.createUser(userDtoTest1);
         Long userId = user.getId();
         ItemDto itemDto = itemService.createItem(itemDtoTest1, userId);
-        PageRequest pageRequest = PageRequest.of(0, 1);
 
-        List<ItemDtoBooking> targetItemDtos = itemService.getItemsByUserId(userId, pageRequest);
+        List<ItemDtoBooking> targetItemDtos = itemService.getItemsByUserId(userId, 0, 1);
 
         assertEquals(1, targetItemDtos.size());
         assertEquals(itemDto.getId(), targetItemDtos.get(0).getId());
@@ -185,9 +183,8 @@ class ItemServiceImplIntegrationTest {
         User user = userService.createUser(userDtoTest1);
         Long userId = user.getId();
         ItemDto itemDto = itemService.createItem(itemDtoTest1, userId);
-        PageRequest pageRequest = PageRequest.of(0, 1);
 
-        List<ItemDto> targetItemDtos = itemService.getItemsByQuery(itemDto.getName(), pageRequest);
+        List<ItemDto> targetItemDtos = itemService.getItemsByQuery(itemDto.getName(), 0, 1);
         assertEquals(1, targetItemDtos.size());
         assertEquals(itemDto.getId(), targetItemDtos.get(0).getId());
         assertEquals(itemDto.getName(), targetItemDtos.get(0).getName());

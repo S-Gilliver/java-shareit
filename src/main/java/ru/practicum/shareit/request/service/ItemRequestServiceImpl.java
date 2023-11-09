@@ -2,6 +2,7 @@ package ru.practicum.shareit.request.service;
 
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -18,12 +19,14 @@ import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @Builder
 @Service
+@Transactional
 public class ItemRequestServiceImpl implements ItemRequestService {
 
     private final ItemService itemService;
@@ -37,6 +40,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRequestRepository itemRequestRepository;
 
     @Override
+    @Transactional
     public ItemRequestDto createItemRequest(ItemRequestDtoIn itemRequestDtoIn, Long userId) {
         User user = userService.getUserById(userId);
         ItemRequest itemRequest = new ItemRequest();
@@ -46,6 +50,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
+    @Transactional
     public List<ItemRequestDto> getAllByRequestorId(Long userId) {
         userService.getUserById(userId);
         List<ItemRequest> requests = itemRequestRepository.findByRequestorIdOrderByCreatedDesc(userId);
@@ -53,13 +58,16 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public List<ItemRequestDto> getAllByNotRequestorId(Long userId, Pageable pageable) {
+    @Transactional
+    public List<ItemRequestDto> getAllByNotRequestorId(Long userId,int from, int size) {
+        Pageable pageable = PageRequest.of(from / size, size);
         userService.getUserById(userId);
         List<ItemRequest> requests = itemRequestRepository.findByRequestorIdNotOrderByCreatedDesc(userId, pageable);
         return getRequests(requests);
     }
 
     @Override
+    @Transactional
     public ItemRequestDto getRequestById(Long userId, Long requestId) {
         userService.getUserById(userId);
 
@@ -78,8 +86,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         return ItemRequestMapper.mapToItemRequestDto(itemRequest);
     }
 
-
-    private List<ItemRequestDto> getRequests(List<ItemRequest> requests) {
+    @Transactional
+    public List<ItemRequestDto> getRequests(List<ItemRequest> requests) {
         List<ItemRequestDto> result = new ArrayList<>();
         for (ItemRequest itemRequest : requests) {
             List<ItemDto> items = ItemMapper

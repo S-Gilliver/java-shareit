@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.TestPropertySource;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
@@ -114,11 +113,10 @@ class ItemRequestServiceImplIntegrationTest {
 
     @Test
     void getAllByNotRequestorId() {
-        PageRequest pageRequest = PageRequest.of(0, 1);
         itemRequestService.createItemRequest(itemRequestDtoIn, userRequestor.getId());
 
         List<ItemRequestDto> targetItemRequest = itemRequestService
-                .getAllByNotRequestorId(userOwner.getId(), pageRequest);
+                .getAllByNotRequestorId(userOwner.getId(), 0, 1);
 
         assertEquals(1, targetItemRequest.size());
         assertEquals(itemRequestDtoIn.getDescription(), targetItemRequest.get(0).getDescription());
@@ -126,11 +124,10 @@ class ItemRequestServiceImplIntegrationTest {
 
     @Test
     void getAllByNotRequestorIdShouldReturnEmptyList() {
-        PageRequest pageRequest = PageRequest.of(0, 1);
         itemRequestService.createItemRequest(itemRequestDtoIn, userRequestor.getId());
 
         List<ItemRequestDto> targetItemRequest = itemRequestService
-                .getAllByNotRequestorId(userRequestor.getId(), pageRequest);
+                .getAllByNotRequestorId(userRequestor.getId(), 0, 1);
 
         assertTrue(targetItemRequest.isEmpty());
     }

@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.dto.BookingDtoIn;
@@ -18,6 +19,7 @@ import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
+import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import java.time.LocalDateTime;
@@ -27,6 +29,7 @@ import java.util.Set;
 @Slf4j
 @Builder
 @Service
+@Transactional
 public class BookingServiceImpl implements BookingService {
 
     private final ItemService itemService;
@@ -36,6 +39,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
 
     @Override
+    @Transactional
     public BookingDtoOut createBooking(BookingDtoIn bookingDtoIn, Long userId) {
         User user = userService.getUserById(userId);
         Item item = itemService.getItemById(bookingDtoIn.getItemId());
@@ -55,6 +59,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDtoOut updateBooking(Boolean approved, Long bookingId, Long userId) {
         Booking booking = getBookingById(bookingId);
         Item item = booking.getItem();
@@ -75,6 +80,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDtoOut getBookingById(Long bookingId, Long userId) {
         userService.getUserById(userId);
         Booking booking = getBookingById(bookingId);
@@ -89,7 +95,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDtoOut> getAllByBooker(Long bookerId, String state, Pageable pageable) {
+    @Transactional
+    public List<BookingDtoOut> getAllByBooker(Long bookerId, String state, int from, int size) {
+        Pageable pageable = PageRequest.of(from / size, size);
         userService.getUserById(bookerId);
         if (state.equals(String.valueOf(BookingState.ALL)) || state.isEmpty()) {
             return BookingMapper.mapToBookingsDtoOut(bookingRepository
@@ -114,7 +122,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDtoOut> getAllByOwner(Long ownerId, String state, Pageable pageable) {
+    @Transactional
+    public List<BookingDtoOut> getAllByOwner(Long ownerId, String state, int from, int size) {
+        Pageable pageable = PageRequest.of(from / size, size);
         userService.getUserById(ownerId);
         if (state.equals(String.valueOf(BookingState.ALL)) || state.isEmpty()) {
             return BookingMapper.mapToBookingsDtoOut(bookingRepository
@@ -137,7 +147,8 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private Booking getBookingById(Long bookingId) {
+    @Transactional
+    public Booking getBookingById(Long bookingId) {
         if (!bookingRepository.existsById(bookingId)) {
             throw new NotFoundException("Booking with Id = " + bookingId + " doesn't exist");
         }

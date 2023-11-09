@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -142,9 +141,10 @@ class BookingControllerTest {
     public void getAllByBookerStateIsAll() throws Exception {
         List<BookingDtoOut> bookings = List.of(bookingDtoOut);
         PageRequest.of(0, 1);
-        when(bookingService.getAllByBooker(Mockito.anyLong(), anyString(),
-                Mockito.any(PageRequest.class)))
+        when(bookingService.getAllByBooker(Mockito.anyLong(), Mockito.anyString(),
+                Mockito.anyInt(), Mockito.anyInt()))
                 .thenReturn(bookings);
+
 
         ResultActions resultActions = performBookingGet(BOOKING_API + "?state=ALL");
 
@@ -160,9 +160,10 @@ class BookingControllerTest {
     public void getAllByBookerStateIsEmpty() throws Exception {
         List<BookingDtoOut> bookings = List.of(bookingDtoOut);
         PageRequest.of(0, 1);
-        when(bookingService.getAllByBooker(Mockito.anyLong(), anyString(),
-                Mockito.any(PageRequest.class)))
+        when(bookingService.getAllByBooker(Mockito.anyLong(), Mockito.anyString(),
+                Mockito.anyInt(), Mockito.anyInt()))
                 .thenReturn(bookings);
+
 
         ResultActions resultActions = performBookingGet(BOOKING_API);
 
@@ -178,7 +179,7 @@ class BookingControllerTest {
         List<BookingDtoOut> bookings = List.of(bookingDtoOut);
         PageRequest.of(0, 1);
         when(bookingService.getAllByBooker(Mockito.anyLong(), Mockito.anyString(),
-                Mockito.any(PageRequest.class)))
+                Mockito.anyInt(), Mockito.anyInt()))
                 .thenReturn(bookings);
 
         ResultActions resultActions = performBookingGet(BOOKING_API + "?from=0&size=1");
@@ -195,7 +196,7 @@ class BookingControllerTest {
         List<BookingDtoOut> bookings = List.of(bookingDtoOut);
         PageRequest.of(0, 1);
         when(bookingService.getAllByOwner(Mockito.anyLong(), Mockito.anyString(),
-                Mockito.any(PageRequest.class)))
+                Mockito.anyInt(), Mockito.anyInt()))
                 .thenReturn(bookings);
 
         ResultActions resultActions = performBookingGet(OWNER_BOOKING_API + "?state=ALL");
@@ -214,8 +215,8 @@ class BookingControllerTest {
         List<BookingDtoOut> bookings = List.of(bookingDtoOut);
         PageRequest.of(0, 1);
 
-        when(bookingService.getAllByOwner(Mockito.anyLong(), anyString(),
-                Mockito.any(PageRequest.class)))
+        when(bookingService.getAllByOwner(Mockito.anyLong(), Mockito.anyString(),
+                Mockito.anyInt(), Mockito.anyInt()))
                 .thenReturn(bookings);
 
         ResultActions resultActions = performBookingGet(OWNER_BOOKING_API);
@@ -233,8 +234,8 @@ class BookingControllerTest {
         List<BookingDtoOut> bookings = List.of(bookingDtoOut);
         PageRequest.of(0, 1);
 
-        when(bookingService.getAllByOwner(Mockito.anyLong(), anyString(),
-                Mockito.any(PageRequest.class)))
+        when(bookingService.getAllByOwner(Mockito.anyLong(), Mockito.anyString(),
+                Mockito.anyInt(), Mockito.anyInt()))
                 .thenReturn(bookings);
 
         ResultActions resultActions = performBookingGet(OWNER_BOOKING_API + "?from=0&size=1");

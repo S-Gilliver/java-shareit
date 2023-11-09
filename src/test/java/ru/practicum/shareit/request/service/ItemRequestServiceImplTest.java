@@ -137,7 +137,6 @@ class ItemRequestServiceImplTest {
 
     @Test
     public void getAllByNotRequestorId() {
-        PageRequest pageRequest = PageRequest.of(1, 1);
         List<ItemRequest> sourceItemRequest = List.of(itemRequestTest);
         List<Item> items = List.of(itemTest);
         when(userService.getUserById(Mockito.anyLong())).thenReturn(userOwner);
@@ -146,7 +145,7 @@ class ItemRequestServiceImplTest {
         when(itemRepository.findByRequestId(Mockito.anyLong())).thenReturn(items);
 
         List<ItemRequestDto> targetItemRequest = itemRequestService
-                .getAllByNotRequestorId(userRequestor.getId(), pageRequest);
+                .getAllByNotRequestorId(userRequestor.getId(), 1, 1);
 
         assertEquals(sourceItemRequest.size(), targetItemRequest.size());
         for (ItemRequest itemRequest : sourceItemRequest) {

@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.TestPropertySource;
 import ru.practicum.shareit.booking.dto.BookingDtoIn;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
@@ -116,11 +115,10 @@ class BookingServiceImplIntegrationTest {
 
     @Test
     public void getAllByBooker() {
-        PageRequest pageRequest = PageRequest.of(0, 1);
         BookingDtoOut bookingDtoOut = bookingService.createBooking(bookingDtoInTest, userBooker.getId());
 
         List<BookingDtoOut> targetBookings = bookingService.getAllByBooker(userBooker.getId(),
-                "ALL", pageRequest);
+                "ALL", 0, 1);
         assertEquals(1, targetBookings.size());
         assertEquals(bookingDtoOut.getId(), targetBookings.get(0).getId());
         assertEquals(bookingDtoOut.getBooker().getId(), targetBookings.get(0).getBooker().getId());
@@ -128,11 +126,10 @@ class BookingServiceImplIntegrationTest {
 
     @Test
     public void getAllByOwner() {
-        PageRequest pageRequest = PageRequest.of(0, 1);
         BookingDtoOut bookingDtoOut = bookingService.createBooking(bookingDtoInTest, userBooker.getId());
 
         List<BookingDtoOut> targetBookings = bookingService.getAllByOwner(userOwner.getId(),
-                "ALL", pageRequest);
+                "ALL", 0, 1);
         assertEquals(1, targetBookings.size());
         assertEquals(bookingDtoOut.getId(), targetBookings.get(0).getId());
         assertEquals(bookingDtoOut.getBooker().getId(), targetBookings.get(0).getBooker().getId());

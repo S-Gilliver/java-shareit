@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.BadRequestException;
@@ -263,7 +262,6 @@ class ItemServiceImplTest {
     @Test
     void getItemsByUserId() {
         List<Item> sourceItems = List.of(itemTest);
-        PageRequest pageRequest = PageRequest.of(1, 1);
 
         when(itemRepository.findByOwnerIdOrderByIdAsc(Mockito.anyLong(),
                 Mockito.any())).thenReturn(sourceItems);
@@ -276,7 +274,7 @@ class ItemServiceImplTest {
         when(bookingRepository.findByItemIdNext(Mockito.anyLong())).thenReturn(bookingTest);
 
         List<ItemDtoBooking> targetItemDtos = itemService.getItemsByUserId(userTest.getId(),
-                pageRequest);
+                1,1);
 
         assertEquals(sourceItems.size(), targetItemDtos.size());
         for (Item sourceItem : sourceItems) {
@@ -294,12 +292,11 @@ class ItemServiceImplTest {
     void getItemsByQuery() {
         List<Item> sourceItems = List.of(itemTest);
         String query = "query";
-        PageRequest pageRequest = PageRequest.of(0, 1);
 
         when(itemRepository.search(Mockito.anyString(), Mockito.any()))
                 .thenReturn(sourceItems);
 
-        List<ItemDto> targetItemDtos = itemService.getItemsByQuery(query, pageRequest);
+        List<ItemDto> targetItemDtos = itemService.getItemsByQuery(query, 0, 1);
 
         assertEquals(sourceItems.size(), targetItemDtos.size());
         for (Item sourceItem : sourceItems) {
@@ -318,12 +315,11 @@ class ItemServiceImplTest {
     void getItemsByQueryIsEmpty() {
         List<Item> sourceItems = List.of(itemTest);
         String query = "";
-        PageRequest pageRequest = PageRequest.of(0, 1);
 
         when(itemRepository.search(Mockito.anyString(),
                 Mockito.any())).thenReturn(sourceItems);
 
-        List<ItemDto> targetItemDtos = itemService.getItemsByQuery(query, pageRequest);
+        List<ItemDto> targetItemDtos = itemService.getItemsByQuery(query, 0, 1);
         assertTrue(targetItemDtos.isEmpty());
     }
 

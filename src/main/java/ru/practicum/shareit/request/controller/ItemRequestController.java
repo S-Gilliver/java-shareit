@@ -1,7 +1,6 @@
 package ru.practicum.shareit.request.controller;
 
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +24,7 @@ import java.util.List;
 @RequestMapping(path = "/requests")
 public class ItemRequestController {
 
-    public final ItemRequestService itemRequestService;
+    private final ItemRequestService itemRequestService;
 
     private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
@@ -44,8 +43,7 @@ public class ItemRequestController {
     public List<ItemRequestDto> getAllByRequestsByUserId(@RequestHeader(USER_ID_HEADER) Long userId,
                                                          @Min(0) @RequestParam(defaultValue = "0") int from,
                                                          @Min(0) @RequestParam(defaultValue = "10") int size) {
-        PageRequest page = PageRequest.of(from / size, size);
-        return itemRequestService.getAllByNotRequestorId(userId, page);
+        return itemRequestService.getAllByNotRequestorId(userId, from, size);
     }
 
     @GetMapping("{requestId}")

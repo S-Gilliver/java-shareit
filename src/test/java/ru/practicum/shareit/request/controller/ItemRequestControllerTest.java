@@ -7,7 +7,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -114,10 +113,9 @@ class ItemRequestControllerTest {
     @Test
     public void getAllByRequestsByUserId() throws Exception {
         List<ItemRequestDto> itemRequestDtos = List.of(itemRequestTest);
-        PageRequest.of(0, 1);
 
         when(itemRequestService.getAllByNotRequestorId(Mockito.anyLong(),
-                Mockito.any(PageRequest.class))).thenReturn(itemRequestDtos);
+                Mockito.anyInt(), Mockito.anyInt())).thenReturn(itemRequestDtos);
 
         ResultActions resultActions = performItemRequestGet(ITEM_REQUEST_API + "/all");
         resultActions
@@ -131,10 +129,9 @@ class ItemRequestControllerTest {
     @Test
     public void getAllByRequestsByUserIdWithFromAndSize() throws Exception {
         List<ItemRequestDto> itemRequestDtos = List.of(itemRequestTest);
-        PageRequest.of(0, 1);
 
         when(itemRequestService.getAllByNotRequestorId(Mockito.anyLong(),
-                Mockito.any(PageRequest.class))).thenReturn(itemRequestDtos);
+                Mockito.anyInt(), Mockito.anyInt())).thenReturn(itemRequestDtos);
 
         ResultActions resultActions = performItemRequestGet(ITEM_REQUEST_API + "/all?from=0&size=1");
 

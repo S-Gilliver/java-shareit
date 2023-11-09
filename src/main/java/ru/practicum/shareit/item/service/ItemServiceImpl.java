@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
@@ -22,6 +23,7 @@ import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
+import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ import java.util.Set;
 @Slf4j
 @Builder
 @Service
+@Transactional
 public class ItemServiceImpl implements ItemService {
 
     private static ItemMapper itemMapper;
@@ -46,6 +49,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRequestRepository itemRequestRepository;
 
     @Override
+    @Transactional
     public ItemDto createItem(ItemDto itemDto, Long userId) {
         User user = userService.getUserById(userId);
         Item item = ItemMapper.mapToItem(itemDto, user);
@@ -59,6 +63,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public ItemDto updateItem(ItemDto itemDto, Long userId) {
         User user = userService.getUserById(userId);
 
@@ -87,6 +92,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public ItemDtoBooking getItemById(Long itemId, Long userId) {
         userService.getUserById(userId);
         Item item = getItemById(itemId);
@@ -106,7 +112,9 @@ public class ItemServiceImpl implements ItemService {
 
 
     @Override
-    public List<ItemDtoBooking> getItemsByUserId(Long userId, Pageable pageable) {
+    @Transactional
+    public List<ItemDtoBooking> getItemsByUserId(Long userId, int from, int size) {
+        Pageable pageable = PageRequest.of(from / size, size);
         List<Item> items = itemRepository.findByOwnerIdOrderByIdAsc(userId, pageable);
         List<ItemDtoBooking> result = new ArrayList<>();
 
@@ -117,7 +125,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getItemsByQuery(String query, Pageable pageable) {
+    @Transactional
+    public List<ItemDto> getItemsByQuery(String query, int from, int size) {
+        Pageable pageable = PageRequest.of(from / size, size);
         List<Item> items = itemRepository.search(query, pageable);
         if (query.isEmpty()) {
             return new ArrayList<>();
@@ -126,6 +136,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public CommentDto createComment(Comment comment, Long itemId, Long bookerId) {
         Booking booking = bookingRepository.findBookingForComment(itemId, bookerId);
         if (booking == null) {
@@ -140,6 +151,7 @@ public class ItemServiceImpl implements ItemService {
 
 
     @Override
+    @Transactional
     public Item getItemById(Long itemId) {
         if (!itemRepository.existsById(itemId)) {
             throw new NotFoundException("Item with Id = " + itemId + " does not exist");
@@ -147,7 +159,8 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.findById(itemId).get();
     }
 
-    private ItemRequest getItemRequestById(Long requestId) {
+    @Transactional
+    public ItemRequest getItemRequestById(Long requestId) {
         if (requestId != null) {
             return itemRequestRepository.findById(requestId)
                     .orElseThrow(() ->

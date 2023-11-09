@@ -10,6 +10,7 @@ import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.Set;
 @Slf4j
 @Builder
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private static UserMapper userMapper;
@@ -25,6 +27,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public User createUser(UserDto userDto) {
         User user = userMapper.mapToUser(userDto);
         validateUserConstraints(user);
@@ -33,6 +36,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User updateUser(UserDto userDto, Long userId) {
         User oldUser = getUserById(userId);
 
@@ -47,18 +51,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User getUserById(Long userId) {
         validateUser(userId);
         return userRepository.findById(userId).get();
     }
 
     @Override
+    @Transactional
     public List<User> getUsers() {
         log.info("user list has been successfully received");
         return userRepository.findAll();
     }
 
     @Override
+    @Transactional
     public void removeUser(Long id) {
         log.info("user successfully deleted");
         userRepository.deleteById(id);

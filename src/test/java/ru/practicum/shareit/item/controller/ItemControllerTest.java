@@ -185,7 +185,7 @@ class ItemControllerTest {
         PageRequest.of(0, 1);
 
         when(itemService.getItemsByUserId(Mockito.anyLong(),
-                Mockito.any())).thenReturn(items);
+                Mockito.anyInt(), Mockito.anyInt())).thenReturn(items);
 
         ResultActions resultActions = performItemGet(ITEM_API + "?from=1&size=1");
         resultActions
@@ -206,7 +206,7 @@ class ItemControllerTest {
         PageRequest.of(0, 1);
 
         when(itemService.getItemsByQuery(Mockito.anyString(),
-                Mockito.any())).thenReturn(items);
+                Mockito.anyInt(), Mockito.anyInt())).thenReturn(items);
 
         ResultActions resultActions = performItemGet(ITEM_API + "/search?text=query&from=1&size=1");
         resultActions
