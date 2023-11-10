@@ -2,6 +2,8 @@ package ru.practicum.shareit.item.service;
 
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -16,24 +18,27 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
+import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
 @Builder
 @Service
+@Transactional
 public class ItemServiceImpl implements ItemService {
 
-    private final UserService userService;
-
     private static ItemMapper itemMapper;
+
+    private final UserService userService;
 
     private final ItemRepository itemRepository;
 
@@ -41,10 +46,16 @@ public class ItemServiceImpl implements ItemService {
 
     private final CommentRepository commentRepository;
 
+    private final ItemRequestRepository itemRequestRepository;
+
     @Override
+    @Transactional
     public ItemDto createItem(ItemDto itemDto, Long userId) {
         User user = userService.getUserById(userId);
         Item item = ItemMapper.mapToItem(itemDto, user);
+
+        ItemRequest itemRequest = getItemRequestById(itemDto.getRequestId());
+        item.setRequest(itemRequest);
 
         validateItemConstraints(item);
         log.info("item successfully added");
@@ -52,6 +63,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public ItemDto updateItem(ItemDto itemDto, Long userId) {
         User user = userService.getUserById(userId);
 
@@ -80,6 +92,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public ItemDtoBooking getItemById(Long itemId, Long userId) {
         userService.getUserById(userId);
         Item item = getItemById(itemId);
@@ -99,8 +112,10 @@ public class ItemServiceImpl implements ItemService {
 
 
     @Override
-    public List<ItemDtoBooking> getItemsByUserId(Long userId) {
-        List<Item> items = itemRepository.findByOwnerIdOrderByIdAsc(userId);
+    @Transactional
+    public List<ItemDtoBooking> getItemsByUserId(Long userId, int from, int size) {
+        Pageable pageable = PageRequest.of(from / size, size);
+        List<Item> items = itemRepository.findByOwnerIdOrderByIdAsc(userId, pageable);
         List<ItemDtoBooking> result = new ArrayList<>();
 
         for (Item item : items) {
@@ -110,8 +125,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getItemsByQuery(String query) {
-        List<Item> items = itemRepository.search(query);
+    @Transactional
+    public List<ItemDto> getItemsByQuery(String query, int from, int size) {
+        Pageable pageable = PageRequest.of(from / size, size);
+        List<Item> items = itemRepository.search(query, pageable);
         if (query.isEmpty()) {
             return new ArrayList<>();
         }
@@ -119,9 +136,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public CommentDto createComment(Comment comment, Long itemId, Long bookerId) {
-        Optional<Booking> booking = Optional.ofNullable(bookingRepository.findBookingForComment(itemId, bookerId));
-        if (booking.isEmpty()) {
+        Booking booking = bookingRepository.findBookingForComment(itemId, bookerId);
+        if (booking == null) {
             throw new BadRequestException("The user has not used the item");
         }
         Item item = getItemById(itemId);
@@ -131,12 +149,24 @@ public class ItemServiceImpl implements ItemService {
         return CommentMapper.mapToCommentDtos(commentRepository.save(comment));
     }
 
+
     @Override
+    @Transactional
     public Item getItemById(Long itemId) {
         if (!itemRepository.existsById(itemId)) {
             throw new NotFoundException("Item with Id = " + itemId + " does not exist");
         }
         return itemRepository.findById(itemId).get();
+    }
+
+    @Transactional
+    public ItemRequest getItemRequestById(Long requestId) {
+        if (requestId != null) {
+            return itemRequestRepository.findById(requestId)
+                    .orElseThrow(() ->
+                            new NotFoundException("Request with Id = " + requestId + " does not exist"));
+        }
+        return null;
     }
 
     private void validateItemConstraints(Item oldItem) {

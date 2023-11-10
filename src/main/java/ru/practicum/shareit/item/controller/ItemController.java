@@ -18,6 +18,7 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @Slf4j
@@ -26,7 +27,7 @@ import java.util.List;
 @RequestMapping("/items")
 public class ItemController {
 
-    public final ItemService itemService;
+    private final ItemService itemService;
 
     private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
@@ -52,13 +53,17 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDtoBooking> getItemsByUserId(@RequestHeader(USER_ID_HEADER) Long userId) {
-        return itemService.getItemsByUserId(userId);
+    public List<ItemDtoBooking> getItemsByUserId(@RequestHeader(USER_ID_HEADER) Long userId,
+                                                 @Min(0) @RequestParam(defaultValue = "0") int from,
+                                                 @Min(0) @RequestParam(defaultValue = "10") int size) {
+        return itemService.getItemsByUserId(userId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> getItemsByQuery(@RequestParam("text") String query) {
-        return itemService.getItemsByQuery(query);
+    public List<ItemDto> getItemsByQuery(@RequestParam("text") String query,
+                                         @Min(0) @RequestParam(defaultValue = "0") int from,
+                                         @Min(0) @RequestParam(defaultValue = "10") int size) {
+        return itemService.getItemsByQuery(query, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
